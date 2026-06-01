@@ -1,0 +1,20 @@
+# Análisis de Datos y Modelado
+pandas
+numpy
+scipy
+scikit-learn
+statsmodels
+
+# Visualización
+matplotlib
+seaborn
+
+# Datos Geoespaciales
+shapely
+geopandas
+geodatasets
+geonamescache
+
+# Lectura de Archivos Excel
+openpyxl
+xlrd

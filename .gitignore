@@ -1,0 +1,26 @@
+# Excluir carpeta de datos (contiene datos no públicos de OWF y datasets pesados de ONU)
+data/
+
+# Dependencias y entornos virtuales de Javascript y Python
+node_modules/
+dist/
+venv/
+.venv/
+env/
+.env
+
+# Jupyter Notebook checkpoints y cachés de Python
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Archivos de configuración de editores y sistemas operativos
+.vscode/
+.idea/
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
