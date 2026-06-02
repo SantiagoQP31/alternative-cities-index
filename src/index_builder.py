@@ -115,9 +115,18 @@ def imputar_datos_jerarquico(df):
 
 def calcular_indice_ciudades(df):
     """
-    Realiza el escalamiento, cálculo de subíndices temáticos e índice compuesto final ACI.
+    Realiza el escalamiento, cálculo de subíndices temáticos, índice compuesto final ACI
+    y escenarios alternativos para análisis de sensibilidad (Social-Led y Green-Led).
     """
     df = df.copy()
+    
+    # 1. Winsorización de variables directas para mitigar el impacto de outliers extremos (5% al 95%)
+    # Esto distribuye equitativamente la escala para el resto de las ciudades.
+    for col in ['GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean']:
+        lower_bound = df[col].quantile(0.05)
+        upper_bound = df[col].quantile(0.95)
+        df[col + '_Winsorized'] = df[col].clip(lower=lower_bound, upper=upper_bound)
+        
     scaler = MinMaxScaler(feature_range=(0, 100))
     
     # Ránkings OWF (invertidos, rango 1 es mejor)
@@ -126,13 +135,13 @@ def calcular_indice_ciudades(df):
     df['Mobility_Connectors_Score'] = 100 - scaler.fit_transform(df[['Mobility Connectors']])
     df['Climate_Resilient_Score'] = 100 - scaler.fit_transform(df[['Climate Resilient']])
     
-    # Características directas (mayor es mejor)
-    df['GDP_pc_Score'] = scaler.fit_transform(df[['GDP_Clean']])
-    df['Green_Score'] = scaler.fit_transform(df[['Green_Clean']])
-    df['Transport_Score'] = scaler.fit_transform(df[['Transport_Clean']])
+    # Características directas Winsorizadas (mayor es mejor)
+    df['GDP_pc_Score'] = scaler.fit_transform(df[['GDP_Clean_Winsorized']])
+    df['Green_Score'] = scaler.fit_transform(df[['Green_Clean_Winsorized']])
+    df['Transport_Score'] = scaler.fit_transform(df[['Transport_Clean_Winsorized']])
     
-    # Gini (invertido, menor Gini es mejor)
-    df['Gini_Score'] = 100 - scaler.fit_transform(df[['Gini_Clean']])
+    # Gini Winsorizado (invertido, menor Gini es mejor)
+    df['Gini_Score'] = 100 - scaler.fit_transform(df[['Gini_Clean_Winsorized']])
     
     # --- Construcción de los 4 Subíndices ---
     
@@ -158,14 +167,34 @@ def calcular_indice_ciudades(df):
         df['Mobility_Connectors_Score'] * 0.5
     )
     
-    # --- Índice de Ciudades Alternativo (ACI) ---
+    # --- Índice de Ciudades Alternativo (ACI) Escenario Base (Ponderaciones Equilibradas - 25% c/u) ---
     df['ACI'] = (
         df['Sub_Index_Economic'] * 0.25 +
         df['Sub_Index_Equity'] * 0.25 +
         df['Sub_Index_Environmental'] * 0.25 +
         df['Sub_Index_Mobility'] * 0.25
     )
-    
     df['ACI_Rank'] = df['ACI'].rank(ascending=False, method='min')
     
+    # --- Escenario Alternativo 1: Enfoque de Justicia Social (Social-Led) ---
+    # Da mayor peso a la Equidad Social (40%) y Movilidad Inclusiva (30%), reduciendo el peso de Economía (10%)
+    df['ACI_Social_Led'] = (
+        df['Sub_Index_Economic'] * 0.10 +
+        df['Sub_Index_Equity'] * 0.40 +
+        df['Sub_Index_Environmental'] * 0.20 +
+        df['Sub_Index_Mobility'] * 0.30
+    )
+    df['ACI_Social_Led_Rank'] = df['ACI_Social_Led'].rank(ascending=False, method='min')
+    
+    # --- Escenario Alternativo 2: Enfoque Ecológico (Green-Led) ---
+    # Da mayor peso a la Vitalidad Ecológica (40%) y Movilidad Sostenible (30%), reduciendo el peso de Economía (10%)
+    df['ACI_Green_Led'] = (
+        df['Sub_Index_Economic'] * 0.10 +
+        df['Sub_Index_Equity'] * 0.20 +
+        df['Sub_Index_Environmental'] * 0.40 +
+        df['Sub_Index_Mobility'] * 0.30
+    )
+    df['ACI_Green_Led_Rank'] = df['ACI_Green_Led'].rank(ascending=False, method='min')
+    
     return df
+

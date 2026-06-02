@@ -1,5 +1,6 @@
 # Excluir carpeta de datos (contiene datos no públicos de OWF y datasets pesados de ONU)
-data/
+/data/
+notebooks/data/
 
 # Dependencias y entornos virtuales de Javascript y Python
 node_modules/

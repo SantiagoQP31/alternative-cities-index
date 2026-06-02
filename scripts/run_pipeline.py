@@ -114,17 +114,42 @@ def run():
     os.makedirs(processed_dir, exist_ok=True)
     df_final.to_excel(os.path.join(processed_dir, 'df_merged.xlsx'), index=False)
     
-    # Crear un JSON ligero para la aplicación interactiva React
+    # 9. Generar y exportar estadísticos descriptivos (Análisis de Robustez)
+    print("Generando estadísticos descriptivos para el reporte académico...")
+    stats_cols = [
+        'ACI', 'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility',
+        'ACI_Social_Led', 'ACI_Green_Led'
+    ]
+    df_stats = df_final[stats_cols].describe()
+    stats_path = os.path.join(processed_dir, 'descriptive_statistics.csv')
+    df_stats.to_csv(stats_path)
+    print(f"Estadísticos descriptivos guardados en: {stats_path}")
+    print(df_stats.round(2))
+    
+    # 10. Imprimir análisis de sensibilidad mediante correlación de Spearman
+    print("\nEvaluando análisis de sensibilidad (Correlación de Spearman)...")
+    corr_sensitivity = df_final[['ACI', 'ACI_Social_Led', 'ACI_Green_Led']].corr(method='spearman')
+    print(corr_sensitivity.round(4))
+    
+    # 11. Crear un JSON ligero para la aplicación interactiva React
     print("Exportando archivo JSON para la interfaz de usuario...")
     json_cols = [
-        'No', 'City', 'Country', 'Income_Group', 'ACI', 'ACI_Rank',
+        'No', 'City', 'Country', 'Income_Group', 
+        'ACI', 'ACI_Rank',
+        'ACI_Social_Led', 'ACI_Social_Led_Rank',
+        'ACI_Green_Led', 'ACI_Green_Led_Rank',
         'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility',
         'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean'
     ]
     df_json = df_final[json_cols].copy()
     
     # Redondear floats para disminuir tamaño de archivo
-    for col in ['ACI', 'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility', 'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean']:
+    cols_to_round = [
+        'ACI', 'ACI_Social_Led', 'ACI_Green_Led',
+        'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility', 
+        'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean'
+    ]
+    for col in cols_to_round:
         df_json[col] = df_json[col].round(2)
         
     web_data_dir = os.path.join(raiz, 'web-app', 'src', 'data')
