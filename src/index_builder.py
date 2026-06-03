@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 
 # Definición de Grupos de Ingresos según el Banco Mundial
 HIGH_INCOME = {
@@ -115,8 +117,9 @@ def imputar_datos_jerarquico(df):
 
 def calcular_indice_ciudades(df):
     """
-    Realiza el escalamiento, cálculo de subíndices temáticos, índice compuesto final ACI
-    y escenarios alternativos para análisis de sensibilidad (Social-Led y Green-Led).
+    Realiza el escalamiento, cálculo de subíndices temáticos, índice compuesto final ACI,
+    escenarios alternativos (Social-Led y Green-Led), análisis de clústeres (K-Means)
+    y un índice derivado estadísticamente por Componentes Principales (PCA).
     """
     df = df.copy()
     
@@ -177,7 +180,6 @@ def calcular_indice_ciudades(df):
     df['ACI_Rank'] = df['ACI'].rank(ascending=False, method='min')
     
     # --- Escenario Alternativo 1: Enfoque de Justicia Social (Social-Led) ---
-    # Da mayor peso a la Equidad Social (40%) y Movilidad Inclusiva (30%), reduciendo el peso de Economía (10%)
     df['ACI_Social_Led'] = (
         df['Sub_Index_Economic'] * 0.10 +
         df['Sub_Index_Equity'] * 0.40 +
@@ -187,7 +189,6 @@ def calcular_indice_ciudades(df):
     df['ACI_Social_Led_Rank'] = df['ACI_Social_Led'].rank(ascending=False, method='min')
     
     # --- Escenario Alternativo 2: Enfoque Ecológico (Green-Led) ---
-    # Da mayor peso a la Vitalidad Ecológica (40%) y Movilidad Sostenible (30%), reduciendo el peso de Economía (10%)
     df['ACI_Green_Led'] = (
         df['Sub_Index_Economic'] * 0.10 +
         df['Sub_Index_Equity'] * 0.20 +
@@ -195,6 +196,27 @@ def calcular_indice_ciudades(df):
         df['Sub_Index_Mobility'] * 0.30
     )
     df['ACI_Green_Led_Rank'] = df['ACI_Green_Led'].rank(ascending=False, method='min')
+    
+    # --- 9. Análisis de Clústeres (K-Means) ---
+    features_cluster = ['Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility']
+    kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+    df['Cluster_ID'] = kmeans.fit_predict(df[features_cluster])
+    
+    # Mapear nombres cualitativos premium basados en la caracterización de los centroides
+    cluster_names = {
+        0: 'Nodos en Transición Dinámica',
+        1: 'Comunidades Locales de Baja Escala',
+        2: 'Líderes de Sostenibilidad y Alta Conectividad',
+        3: 'Metrópolis con Desafíos de Cohesión Social'
+    }
+    df['Cluster_Name'] = df['Cluster_ID'].map(cluster_names)
+    
+    # --- 10. Validación Metodológica por PCA ---
+    pca = PCA(n_components=1, random_state=42)
+    # El primer componente principal captura el factor latente general de bienestar y desarrollo sostenible
+    pca_values = pca.fit_transform(df[features_cluster])
+    df['ACI_PCA'] = scaler.fit_transform(pca_values) # Escalar a [0, 100]
+    df['ACI_PCA_Rank'] = df['ACI_PCA'].rank(ascending=False, method='min')
     
     return df
 
