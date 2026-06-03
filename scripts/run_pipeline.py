@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.data_loader import cargar_excel_seguro, obtener_raiz_proyecto
 from src.data_cleaning import normalizar_nombre, normalizar_pais
 from src.index_builder import imputar_datos_jerarquico, calcular_indice_ciudades
+from src.geocoder import geocode_city
 
 def run():
     print("Iniciando pipeline de integración y cálculo del índice...")
@@ -107,6 +108,12 @@ def run():
     print("Calculando subíndices de Dinamismo Económico, Inclusión Social, Vitalidad Ecológica y Movilidad...")
     df_final = calcular_indice_ciudades(df_imputed)
     
+    # 7.5 Geocodificación espacial
+    print("Geocodificando ciudades para el mapa interactivo...")
+    coords = df_final['City'].apply(geocode_city)
+    df_final['Lat'] = [c[0] for c in coords]
+    df_final['Lng'] = [c[1] for c in coords]
+    
     # Mapeo regional geopolítico
     region_map = {
         'Argentina': 'Latin America & Caribbean', 'Bolivia': 'Latin America & Caribbean', 'Brazil': 'Latin America & Caribbean',
@@ -197,7 +204,8 @@ def run():
         'ACI_PCA', 'ACI_PCA_Rank',
         'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility',
         'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean',
-        'Cluster_ID', 'Cluster_Name'
+        'Cluster_ID', 'Cluster_Name',
+        'Lat', 'Lng'
     ]
     df_json = df_final[json_cols].copy()
     
@@ -205,7 +213,8 @@ def run():
     cols_to_round = [
         'ACI', 'ACI_Social_Led', 'ACI_Green_Led', 'ACI_PCA',
         'Sub_Index_Economic', 'Sub_Index_Equity', 'Sub_Index_Environmental', 'Sub_Index_Mobility', 
-        'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean'
+        'GDP_Clean', 'Gini_Clean', 'Green_Clean', 'Transport_Clean',
+        'Lat', 'Lng'
     ]
     for col in cols_to_round:
         df_json[col] = df_json[col].round(2)

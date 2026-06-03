@@ -1,82 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
-  /* Sleek Dark Mode Palette */
-  --bg-main: #06070d;
-  --bg-card: rgba(18, 20, 36, 0.7);
-  --bg-card-hover: rgba(26, 29, 52, 0.85);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glass-glow: rgba(124, 58, 237, 0.25);
+  /* Defined, Sober Palette (Academic / Consulting Editorial Style) */
+  --bg-dark-900: #0b0e14;         /* Deep slate dark background */
+  --bg-dark-850: #121620;         /* Card background */
+  --bg-dark-800: #171d2b;         /* Dropdown and lighter fields */
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-focus: rgba(181, 154, 87, 0.4);
   
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-bright: #ffffff;
+  --text-primary: #f1f5f9;       /* Bright grey */
+  --text-secondary: #94a3b8;     /* Muted blue-grey */
+  --text-muted: #64748b;         /* Darker grey */
   
-  /* Curated HSL Thematic Colors */
-  --color-primary: hsl(260, 85%, 65%);     /* Deep purple for ACI */
-  --color-primary-glow: rgba(139, 92, 246, 0.2);
-  --color-econ: hsl(45, 95%, 60%);         /* Rich Gold for Economy */
-  --color-econ-glow: rgba(234, 179, 8, 0.15);
-  --color-equity: hsl(340, 85%, 60%);      /* Rose Red for Social Justice */
-  --color-equity-glow: rgba(244, 63, 94, 0.15);
-  --color-env: hsl(150, 80%, 50%);         /* Vibrant Emerald for Ecology */
-  --color-env-glow: rgba(16, 185, 129, 0.15);
-  --color-mobility: hsl(195, 90%, 55%);    /* Electric Blue for Mobility */
-  --color-mobility-glow: rgba(14, 165, 233, 0.15);
+  /* Curated Gold/Bronze Accent Color - Single Primary Brand Identity */
+  --color-accent: #b59a57;        /* Sophisticated Warm Gold/Bronze */
+  --color-accent-hover: #d1b46a;  /* Lighter gold for hover states */
+  --color-accent-dim: rgba(181, 154, 87, 0.1);
+  --color-accent-border: rgba(181, 154, 87, 0.3);
+
+  /* Sub-indices representation (Sober, distinct but harmonized) */
+  --color-econ: #cfa853;         /* Warm Gold */
+  --color-equity: #c35c6a;       /* Soft crimson */
+  --color-env: #4d9f7e;          /* Muted Sage Green */
+  --color-mobility: #498faf;     /* Slate Blue */
+
+  /* Typography */
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   
-  /* Shadow & Glow Effects */
-  --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.15);
+  /* Layout Transitions */
+  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Transitions */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  color: var(--text-main);
-  background-color: var(--bg-main);
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle at 50% 0%, #15102a 0%, #06070d 60%);
-  min-height: 100vh;
-  overflow-x: hidden;
+  background-color: var(--bg-dark-900);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* Custom Scrollbar for Premium Feel */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(6, 7, 13, 0.5);
+  background: var(--bg-dark-900);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+  background: var(--color-accent);
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
 }
